@@ -473,41 +473,47 @@
             const soyad = document.getElementById('newSoyad').value.trim();
             if (!ad || !soyad) return alert('Ad ve Soyad zorunludur!');
 
-            document.getElementById('submitCardBtn').disabled = true;
-            document.getElementById('submitCardBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Oluşturuluyor...';
+            const btn = document.getElementById('submitCardBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Oluşturuluyor...';
 
-            const body = {
-                ad, soyad,
-                unvan: document.getElementById('newUnvan').value.trim(),
-                sirket: document.getElementById('newSirket').value.trim(),
-                tel: document.getElementById('newTel').value.trim(),
-                email: document.getElementById('newEmail').value.trim(),
-                web: document.getElementById('newWeb').value.trim(),
-                sehir: document.getElementById('newSehir').value.trim(),
-                linkedin: document.getElementById('newLinkedin').value.trim(),
-                instagram: document.getElementById('newInstagram').value.trim(),
-                twitter: document.getElementById('newTwitter').value.trim(),
-                whatsapp: document.getElementById('newWhatsapp').value.trim(),
-                bio: document.getElementById('newBio').value.trim(),
-                renk: document.getElementById('newRenk').value
-            };
+            try {
+                const body = {
+                    ad, soyad,
+                    unvan: document.getElementById('newUnvan').value.trim(),
+                    sirket: document.getElementById('newSirket').value.trim(),
+                    tel: document.getElementById('newTel').value.trim(),
+                    email: document.getElementById('newEmail').value.trim(),
+                    web: document.getElementById('newWeb').value.trim(),
+                    sehir: document.getElementById('newSehir').value.trim(),
+                    linkedin: document.getElementById('newLinkedin').value.trim(),
+                    instagram: document.getElementById('newInstagram').value.trim(),
+                    twitter: document.getElementById('newTwitter').value.trim(),
+                    whatsapp: document.getElementById('newWhatsapp').value.trim(),
+                    bio: document.getElementById('newBio').value.trim(),
+                    renk: document.getElementById('newRenk').value
+                };
 
-            const result = await fetchAPI('/api/admin/kart', { method: 'POST', body: JSON.stringify(body) });
+                const result = await fetchAPI('/api/admin/kart', { method: 'POST', body: JSON.stringify(body) });
 
-            document.getElementById('submitCardBtn').disabled = false;
-            document.getElementById('submitCardBtn').innerHTML = '<i class="fa-solid fa-check"></i> Oluştur';
-
-            if (result && result.kart) {
-                document.getElementById('cardFormBody').style.display = 'none';
-                document.getElementById('cardFormFooter').style.display = 'none';
-                document.getElementById('qrResult').style.display = 'block';
-                document.getElementById('qrResultImg').src = result.qrCode;
-                document.getElementById('qrResultUrl').href = result.url;
-                document.getElementById('qrResultUrl').textContent = result.url;
-                loadCardsData();
-                loadDashboardData();
-            } else {
-                alert('Kart oluşturulurken bir hata oluştu.');
+                if (result && result.kart) {
+                    document.getElementById('cardFormBody').style.display = 'none';
+                    document.getElementById('cardFormFooter').style.display = 'none';
+                    document.getElementById('qrResult').style.display = 'block';
+                    document.getElementById('qrResultImg').src = result.qrCode;
+                    document.getElementById('qrResultUrl').href = result.url;
+                    document.getElementById('qrResultUrl').textContent = result.url;
+                    loadCardsData();
+                    loadDashboardData();
+                } else {
+                    alert('Kart oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Bağlantı hatası: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Oluştur';
             }
         }
     </script>
