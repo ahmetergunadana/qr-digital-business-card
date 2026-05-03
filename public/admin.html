@@ -1,1 +1,14 @@
+<!DOCTYPE html><html><body>
+  <script>
+    async function l(){
+      const u=document.getElementById('u').value;
+      const p=document.getElementById('p').value;
+      const r=await fetch('/api/admin/analitik',{headers:{'x-admin-user':u,'x-admin-pass':p}});
+      if(r.ok) location.reload(); else alert('Error');
+    }
+  </script>
+  <input id="u"><input id="p" type="password"><button onclick="l()">Login</button>button>
+</body></html>
 
+  </script>
+</body></html>
