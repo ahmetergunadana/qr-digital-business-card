@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 
 app.set('trust proxy', 1); // Trust first proxy (required for Glitch/render)
 
