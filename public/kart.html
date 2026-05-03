@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijital Kartvizit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
+
+        .card-container {
+            background-color: var(--card-bg);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 0.5s ease-out;
+            display: none; /* Hidden until data loads */
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-bg {
+            height: 120px;
+            background-color: var(--primary);
+            position: relative;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid var(--card-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-content {
+            padding: 4rem 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+
+        .title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .company {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .bio {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: var(--text-main);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: background-color 0.2s;
+        }
+
+        .contact-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.25rem;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .contact-value {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #f3f4f6;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.25rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Error/Loading States */
+        #statusMessage {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="statusMessage">
+        <div class="spinner"></div>
+        Kartvizit Yükleniyor...
+    </div>
+
+    <div class="card-container" id="cardContainer">
+        <div class="header-bg" id="headerBg">
+            <div class="avatar" id="avatarInitials">A</div>
+        </div>
+
+        <div class="card-content">
+            <h1 class="name" id="fullName">Ad Soyad</h1>
+            <div class="title" id="jobTitle">Unvan</div>
+            <div class="company" id="companyName">Şirket</div>
+            
+            <p class="bio" id="bioText"></p>
+
+            <div class="action-buttons">
+                <a href="#" class="btn btn-primary" id="saveContactBtn">
+                    <i class="fa-solid fa-user-plus"></i> Rehbere Ekle
+                </a>
+                <button class="btn btn-secondary" id="shareBtn">
+                    <i class="fa-solid fa-share-nodes"></i> Paylaş
+                </button>
+            </div>
+
+            <div class="contact-list" id="contactList">
+                <!-- Contact items populated dynamically -->
+            </div>
+
+            <div class="social-links" id="socialLinks">
+                <!-- Social links populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (!id) {
+                showError('Geçersiz kart bağlantısı.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/kart/${id}`, {
+                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 404) throw new Error('Kart bulunamadı.');
+                    if (response.status === 403) throw new Error('Bu kart devre dışı bırakılmış.');
+                    throw new Error('Bir hata oluştu.');
+                }
+
+                const kart = await response.json();
+                renderCard(kart);
+
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+
+        function showError(message) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; color: #ef4444; margin-bottom: 1rem; display: block;"></i> ${message}`;
+        }
+
+        function renderCard(kart) {
+            // Set CSS Variables
+            if (kart.renk) {
+                document.documentElement.style.setProperty('--primary', kart.renk);
+            }
+
+            document.getElementById('statusMessage').style.display = 'none';
+            document.getElementById('cardContainer').style.display = 'block';
+
+            // Basic Info
+            const fullName = `${kart.ad} ${kart.soyad}`;
+            document.title = `${fullName} - Dijital Kartvizit`;
+            document.getElementById('fullName').textContent = fullName;
+            document.getElementById('avatarInitials').textContent = (kart.ad[0] + kart.soyad[0]).toUpperCase();
+            
+            if (kart.unvan) {
+                document.getElementById('jobTitle').textContent = kart.unvan;
+            } else {
+                document.getElementById('jobTitle').style.display = 'none';
+            }
+
+            if (kart.sirket) {
+                document.getElementById('companyName').textContent = kart.sirket;
+            } else {
+                document.getElementById('companyName').style.display = 'none';
+            }
+
+            if (kart.bio) {
+                document.getElementById('bioText').textContent = kart.bio;
+            } else {
+                document.getElementById('bioText').style.display = 'none';
+            }
+
+            // Save to contacts btn
+            document.getElementById('saveContactBtn').href = `/api/kart/${kart.id}/vcard`;
+
+            // Contact List
+            const contactList = document.getElementById('contactList');
+            
+            if (kart.tel) {
+                contactList.innerHTML += `
+                    <a href="tel:${kart.tel}" class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+                        <div class="contact-details">
+                            <span class="contact-label">Telefon</span>
+                            <span class="contact-value">${kart.tel}</span>
+                        </div>
+                    </a>`;
+            }
+
+            if (kart.email) {
+                contactList.innerHTML += `
+                    <a href="mailto:${kart.email}" class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="contact-details">
+                            <span class="contact-label">E-posta</span>
+                            <span class="contact-value">${kart.email}</span>
+                        </div>
+                    </a>`;
+            }
+
+            if (kart.web) {
+                // Ensure URL has protocol
+                const url = kart.web.startsWith('http') ? kart.web : `https://${kart.web}`;
+                contactList.innerHTML += `
+                    <a href="${url}" target="_blank" class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-globe"></i></div>
+                        <div class="contact-details">
+                            <span class="contact-label">Web Sitesi</span>
+                            <span class="contact-value">${kart.web.replace(/^https?:\/\//, '')}</span>
+                        </div>
+                    </a>`;
+            }
+
+            if (kart.sehir) {
+                contactList.innerHTML += `
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="contact-details">
+                            <span class="contact-label">Konum</span>
+                            <span class="contact-value">${kart.sehir}</span>
+                        </div>
+                    </div>`;
+            }
+
+            // Custom Fields
+            if (kart.ozelAlanlar && kart.ozelAlanlar.length > 0) {
+                kart.ozelAlanlar.forEach(alan => {
+                    contactList.innerHTML += `
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fa-solid fa-star"></i></div>
+                            <div class="contact-details">
+                                <span class="contact-label">${alan.label}</span>
+                                <span class="contact-value">${alan.value}</span>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            // Social Links
+            const socialLinks = document.getElementById('socialLinks');
+            let hasSocials = false;
+
+            if (kart.whatsapp) {
+                hasSocials = true;
+                const waNum = kart.whatsapp.replace(/\D/g, ''); // Remove non-digits
+                socialLinks.innerHTML += `<a href="https://wa.me/${waNum}" target="_blank" class="social-link"><i class="fa-brands fa-whatsapp"></i></a>`;
+            }
+            if (kart.linkedin) {
+                hasSocials = true;
+                socialLinks.innerHTML += `<a href="${kart.linkedin}" target="_blank" class="social-link"><i class="fa-brands fa-linkedin-in"></i></a>`;
+            }
+            if (kart.instagram) {
+                hasSocials = true;
+                socialLinks.innerHTML += `<a href="${kart.instagram}" target="_blank" class="social-link"><i class="fa-brands fa-instagram"></i></a>`;
+            }
+            if (kart.twitter) {
+                hasSocials = true;
+                socialLinks.innerHTML += `<a href="${kart.twitter}" target="_blank" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>`;
+            }
+
+            if (!hasSocials) {
+                socialLinks.style.display = 'none';
+            }
+
+            // Share functionality
+            document.getElementById('shareBtn').addEventListener('click', async () => {
+                const shareData = {
+                    title: `${fullName} - Dijital Kartvizit`,
+                    text: `${fullName} iletişim bilgileri`,
+                    url: window.location.href
+                };
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share(shareData);
+                    } else {
+                        // Fallback to copy link
+                        await navigator.clipboard.writeText(window.location.href);
+                        const btn = document.getElementById('shareBtn');
+                        const originalHtml = btn.innerHTML;
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Kopyalandı';
+                        setTimeout(() => btn.innerHTML = originalHtml, 2000);
+                    }
+                } catch (err) {
+                    console.error('Share failed:', err);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

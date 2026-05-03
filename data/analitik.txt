@@ -1,0 +1,5 @@
+{"tip":"tarama","kartId":"b6f121d9-fba2-4139-9c0a-9761dde8727a","kartSahibi":"Zeynep Ergün","zaman":"2026-05-03T17:01:54.871Z","ip":"::1"}
+{"tip":"tarama","kartId":"2bf904e0-fcfe-45e5-bef1-56d52ef916ea","kartSahibi":"Zeynep Ergün","zaman":"2026-05-03T17:08:43.651Z","ip":"::ffff:172.20.3.35"}
+{"tip":"tarama","kartId":"f8c682ff-6b9f-4a03-b28b-d94f9b7cae5f","kartSahibi":"Zeynep Ergün","zaman":"2026-05-03T17:14:06.446Z","ip":"::1"}
+{"tip":"tarama","kartId":"e8ca30f7-ac47-4eb8-9ebf-253515af4152","kartSahibi":"Zeynep Ergün","zaman":"2026-05-03T17:16:13.790Z","ip":"::1"}
+{"tip":"tarama","kartId":"96bfeec1-54c3-4763-924f-cc1d60292f5c","kartSahibi":"Zeynep Ergün","zaman":"2026-05-03T17:31:13.151Z","ip":"::1"}

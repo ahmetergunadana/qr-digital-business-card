@@ -1,0 +1,12 @@
+{"id":"b6f121d9-fba2-4139-9c0a-9761dde8727a","ad":"Zeynep","soyad":"Ergün","unvan":"Garson","sirket":"Sheraton","tel":"0 551 678 49 06","email":"adana@gmail.com","web":"https://www.youtube.com/","sehir":"Adana","linkedin":"","instagram":"","twitter":"","whatsapp":"","bio":"Zeynep ergun","renk":"#1f2937","olusturulma":"2026-05-03T17:01:01.476Z","aktif":true}
+---
+{"id":"2bf904e0-fcfe-45e5-bef1-56d52ef916ea","ad":"Zeynep","soyad":"Ergün","unvan":"Garson","sirket":"Sheraton","tel":"0 551 678 49 06","email":"adana@gmail.com","web":"https://www.youtube.com/","sehir":"Adana","linkedin":"","instagram":"","twitter":"","whatsapp":"","bio":"","renk":"#f59e0b","olusturulma":"2026-05-03T17:06:41.768Z","aktif":true}
+---
+{"id":"b101b157-e2ab-4d09-bb86-b4c0d623d0d4","ad":"Zeynep","soyad":"Ergün","unvan":"Garson","sirket":"Sheraton","tel":"0 551 678 49 06","email":"adana@gmail.com","web":"https://www.youtube.com/","sehir":"Adana","linkedin":"","instagram":"","twitter":"","whatsapp":"","bio":"","renk":"#ec4899","olusturulma":"2026-05-03T17:09:08.820Z","aktif":true}
+---
+{"id":"f8c682ff-6b9f-4a03-b28b-d94f9b7cae5f","ad":"Zeynep","soyad":"Ergün","unvan":"Garson","sirket":"Sheraton","tel":"0 551 678 49 06","email":"adana@gmail.com","web":"https://www.youtube.com/","sehir":"Adana","linkedin":"","instagram":"","twitter":"","whatsapp":"","bio":"","renk":"#1f2937","olusturulma":"2026-05-03T17:13:11.471Z","aktif":true}
+---
+{"id":"e8ca30f7-ac47-4eb8-9ebf-253515af4152","ad":"Zeynep","soyad":"Ergün","unvan":"Garson","sirket":"Sheraton","tel":"0 551 678 49 06","email":"adana@gmail.com","web":"https://www.youtube.com/","sehir":"Adana","linkedin":"","instagram":"","twitter":"","whatsapp":"","bio":"","renk":"#f59e0b","olusturulma":"2026-05-03T17:15:57.513Z","aktif":true}
+---
+{"id":"96bfeec1-54c3-4763-924f-cc1d60292f5c","userId":"e9244115-e3d1-4fbe-848f-14e618456216","ad":"Zeynep","soyad":"Ergün","unvan":"Garson","sirket":"Sheraton","tel":"","email":"adana@gmail.com","web":"https://www.youtube.com/","sehir":"Adana","linkedin":"","instagram":"","twitter":"","whatsapp":"","bio":"zeynep ergun","renk":"#f59e0b","ozelAlanlar":[{"label":"Skype","value":"zeynep1209"}],"olusturulma":"2026-05-03T17:30:31.431Z","aktif":true}
+---

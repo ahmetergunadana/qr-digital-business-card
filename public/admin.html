@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - QR Kartvizit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --sidebar-bg: #111827;
+            --sidebar-hover: #1f2937;
+            --sidebar-text: #9ca3af;
+            --sidebar-text-active: #ffffff;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(17, 24, 39, 0.95); display: flex; justify-content: center; align-items: center; z-index: 100;
+        }
+        .login-box { background-color: white; padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .login-box h2 { margin-bottom: 1.5rem; color: var(--text-main); }
+        .login-box input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem; font-size: 1rem; }
+        .login-box button { width: 100%; padding: 0.75rem; background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: white; display: flex; flex-direction: column; transition: all 0.3s; }
+        .sidebar-header { padding: 1.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 0.75rem; }
+        .nav-menu { display: flex; flex-direction: column; padding: 1rem 0; flex-grow: 1; }
+        .nav-item { padding: 0.875rem 1.5rem; color: var(--sidebar-text); text-decoration: none; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { background-color: var(--sidebar-hover); color: var(--sidebar-text-active); border-left: 4px solid var(--primary); }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-header { height: 64px; background-color: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; justify-content: space-between; }
+        .content-area { flex-grow: 1; padding: 2rem; overflow-y: auto; }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background-color: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 50%; background-color: rgba(79, 70, 229, 0.1); color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; }
+        .stat-info h3 { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
+        .stat-info p { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+
+        .panel { background-color: white; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .panel-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+
+        /* Table */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background-color: #f9fafb; font-weight: 600; font-size: 0.875rem; color: var(--text-muted); }
+        td { font-size: 0.95rem; }
+        tbody tr:hover { background-color: #f9fafb; }
+        
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background-color: #d1fae5; color: #065f46; }
+        .badge-danger { background-color: #fee2e2; color: #991b1b; }
+
+        .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.875rem; border-radius: 0.375rem; border: none; cursor: pointer; margin-right: 0.5rem; color: white; }
+        .btn-info { background-color: #3b82f6; }
+        .btn-warning { background-color: #f59e0b; }
+        .btn-danger { background-color: #ef4444; }
+
+        .controls { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+        .controls input { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; width: 300px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>Admin Girişi</h2>
+            <input type="password" id="adminPassword" placeholder="Şifrenizi girin" autofocus>
+            <button id="loginBtn">Giriş Yap</button>
+            <p id="loginError" style="color: var(--danger); margin-top: 1rem; display: none;">Hatalı şifre!</p>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-qrcode"></i> QR Admin</div>
+        <div class="nav-menu">
+            <div class="nav-item active" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+            <div class="nav-item" data-target="kullanicilar"><i class="fa-solid fa-users"></i> Kullanıcılar</div>
+            <div class="nav-item" data-target="kartlar"><i class="fa-solid fa-address-card"></i> Tüm Kartlar</div>
+            <div class="nav-item" data-target="loglar"><i class="fa-solid fa-list-ul"></i> Canlı Loglar</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-header">
+            <h2 id="pageTitle">Dashboard</h2>
+            <button id="logoutBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i> Çıkış</button>
+        </div>
+
+        <div class="content-area">
+            
+            <div id="dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-info"><h3>Kayıtlı Kullanıcı</h3><p id="statTotalUsers">-</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fa-solid fa-address-card"></i></div>
+                        <div class="stat-info"><h3>Toplam Kart</h3><p id="statTotalCards">-</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="fa-solid fa-eye"></i></div>
+                        <div class="stat-info"><h3>Toplam Tarama</h3><p id="statTotalScans">-</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="stat-info"><h3>Bugünkü Tarama</h3><p id="statTodayScans">-</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kullanıcılar Tab -->
+            <div id="kullanicilar" class="tab-content">
+                <div class="panel">
+                    <h3 class="panel-title">Sistemdeki Kullanıcılar</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Kullanıcı Adı</th><th>Kayıt Tarihi</th><th>Kart Sayısı</th><th>İşlemler</th></tr>
+                            </thead>
+                            <tbody id="usersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kartlar Tab -->
+            <div id="kartlar" class="tab-content">
+                <div class="panel">
+                    <div class="controls"><input type="text" id="searchInput" placeholder="İsim veya şirket ara..."></div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Kart Sahibi</th><th>Kullanıcı (Hesap)</th><th>Tarih</th><th>Durum</th><th>İşlemler</th></tr>
+                            </thead>
+                            <tbody id="cardsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loglar Tab -->
+            <div id="loglar" class="tab-content">
+                <div class="panel">
+                    <h3 class="panel-title">Son 100 İşlem</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Zaman</th><th>Olay Tipi</th><th>Taranan Kart Sahibi</th><th>IP Adresi</th></tr>
+                            </thead>
+                            <tbody id="logsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let adminPass = '';
+        let globalCards = [];
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass) {
+                adminPass = pass;
+                loadDashboardData().then(success => {
+                    if (success) {
+                        document.getElementById('loginOverlay').style.display = 'none';
+                        loadUsersData();
+                        loadCardsData();
+                        loadLogsData();
+                    } else {
+                        document.getElementById('loginError').style.display = 'block';
+                    }
+                });
+            }
+        });
+
+        document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            adminPass = '';
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        });
+
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const pageTitle = document.getElementById('pageTitle');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(n => n.classList.remove('active'));
+                tabContents.forEach(t => t.classList.remove('active'));
+                
+                item.classList.add('active');
+                document.getElementById(item.dataset.target).classList.add('active');
+                pageTitle.textContent = item.textContent.trim();
+
+                if (item.dataset.target === 'dashboard') loadDashboardData();
+                if (item.dataset.target === 'kullanicilar') loadUsersData();
+                if (item.dataset.target === 'kartlar') loadCardsData();
+                if (item.dataset.target === 'loglar') loadLogsData();
+            });
+        });
+
+        async function fetchAPI(endpoint, options = {}) {
+            options.headers = { 
+                ...options.headers, 
+                'x-admin-pass': adminPass, 
+                'Content-Type': 'application/json',
+                'Bypass-Tunnel-Reminder': 'true'
+            };
+            const response = await fetch(endpoint, options);
+            if (response.status === 401) {
+                if (document.getElementById('loginOverlay').style.display === 'none') {
+                    alert('Oturum süresi doldu veya yetkisiz erişim.');
+                    document.getElementById('logoutBtn').click();
+                }
+                return null;
+            }
+            return response.json();
+        }
+
+        async function loadDashboardData() {
+            const data = await fetchAPI('/api/admin/analitik');
+            if (!data) return false;
+
+            document.getElementById('statTotalUsers').textContent = data.totalUsers;
+            document.getElementById('statTotalCards').textContent = data.totalCards;
+            document.getElementById('statTotalScans').textContent = data.totalScans;
+            document.getElementById('statTodayScans').textContent = data.todayScans;
+            return true;
+        }
+
+        async function loadUsersData() {
+            const data = await fetchAPI('/api/admin/kullanicilar');
+            if (!data) return;
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(u => {
+                const date = new Date(u.olusturulma).toLocaleDateString('tr-TR');
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${u.username}</strong></td>
+                        <td>${date}</td>
+                        <td>${u.kartSayisi} Kart</td>
+                        <td>
+                            <button class="btn-sm btn-danger" onclick="deleteUser('${u.id}')"><i class="fa-solid fa-trash"></i> Kullanıcıyı Sil</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function loadCardsData() {
+            const data = await fetchAPI('/api/admin/kartlar');
+            if (!data) return;
+            globalCards = data;
+            renderCardsTable(data);
+        }
+
+        function renderCardsTable(cards) {
+            const tbody = document.getElementById('cardsTableBody');
+            tbody.innerHTML = '';
+
+            cards.forEach(card => {
+                const date = new Date(card.olusturulma).toLocaleDateString('tr-TR');
+                const statusBadge = card.aktif ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-danger">Pasif</span>';
+                const toggleClass = card.aktif ? 'btn-warning' : 'btn-success';
+                const toggleText = card.aktif ? 'Pasife Al' : 'Aktif Et';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${card.ad} ${card.soyad}</strong><br><small style="color: #6b7280;">${card.sirket || '-'}</small></td>
+                        <td><span class="badge" style="background:#e5e7eb; color:#374151;">@${card.username}</span></td>
+                        <td>${date}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <a href="/kart.html?id=${card.id}" target="_blank" class="btn-sm btn-info" style="text-decoration:none;"><i class="fa-solid fa-eye"></i></a>
+                            <button class="btn-sm ${toggleClass}" onclick="toggleStatus('${card.id}')">${toggleText}</button>
+                            <button class="btn-sm btn-danger" onclick="deleteCard('${card.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = globalCards.filter(c => 
+                `${c.ad} ${c.soyad}`.toLowerCase().includes(term) || 
+                (c.sirket && c.sirket.toLowerCase().includes(term)) ||
+                (c.username && c.username.toLowerCase().includes(term))
+            );
+            renderCardsTable(filtered);
+        });
+
+        window.toggleStatus = async (id) => {
+            const res = await fetchAPI(`/api/admin/kart/${id}/durum`, { method: 'PATCH' });
+            if (res) loadCardsData();
+        };
+
+        window.deleteCard = async (id) => {
+            if (confirm('Bu kartı silmek istediğinize emin misiniz?')) {
+                const res = await fetchAPI(`/api/admin/kart/${id}`, { method: 'DELETE' });
+                if (res) loadCardsData();
+            }
+        };
+
+        window.deleteUser = async (id) => {
+            if (confirm('Bu kullanıcıyı ve kullanıcının tüm kartlarını silmek istediğinize emin misiniz? BU İŞLEM GERİ ALINAMAZ!')) {
+                const res = await fetchAPI(`/api/admin/kullanici/${id}`, { method: 'DELETE' });
+                if (res) { loadUsersData(); loadCardsData(); loadDashboardData(); }
+            }
+        };
+
+        async function loadLogsData() {
+            const data = await fetchAPI('/api/admin/analitik/ham');
+            if (!data) return;
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(log => {
+                const date = new Date(log.zaman).toLocaleString('tr-TR');
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${date}</td>
+                        <td><span class="badge badge-success">${log.tip.toUpperCase()}</span></td>
+                        <td>${log.kartSahibi}</td>
+                        <td><span style="font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">${log.ip}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
