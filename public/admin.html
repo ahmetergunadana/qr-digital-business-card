@@ -78,8 +78,34 @@
         .btn-warning { background-color: #f59e0b; }
         .btn-danger { background-color: #ef4444; }
 
-        .controls { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .controls input { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; width: 300px; }
+
+        .btn-primary { padding: 0.5rem 1.25rem; background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.2s; }
+        .btn-primary:hover { background-color: #4338CA; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 200; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 1rem; width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: fadeIn 0.3s ease; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); }
+        .modal-header h3 { font-size: 1.25rem; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+        .modal-body { padding: 1.5rem 2rem; }
+        .modal-body .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .modal-body .form-full { margin-bottom: 1rem; }
+        .modal-body label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .modal-body input, .modal-body textarea { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.9rem; font-family: inherit; }
+        .modal-body textarea { resize: vertical; min-height: 60px; }
+        .modal-body input:focus, .modal-body textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .modal-footer { padding: 1rem 2rem 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem; }
+        .btn-cancel { padding: 0.5rem 1.25rem; background: #f3f4f6; color: var(--text-main); border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.9rem; cursor: pointer; }
+        .form-section-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin: 1rem 0 0.5rem; padding-bottom: 0.25rem; border-bottom: 2px solid rgba(79,70,229,0.15); }
+
+        /* QR Result */
+        .qr-result { display: none; text-align: center; padding: 1.5rem; }
+        .qr-result img { max-width: 200px; border-radius: 0.5rem; border: 1px solid var(--border); }
+        .qr-result .card-url { margin-top: 0.75rem; word-break: break-all; font-size: 0.85rem; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -151,7 +177,10 @@
             <!-- Kartlar Tab -->
             <div id="kartlar" class="tab-content">
                 <div class="panel">
-                    <div class="controls"><input type="text" id="searchInput" placeholder="İsim veya şirket ara..."></div>
+                    <div class="controls">
+                        <input type="text" id="searchInput" placeholder="İsim veya şirket ara...">
+                        <button class="btn-primary" onclick="openAddCardModal()"><i class="fa-solid fa-plus"></i> Kart Ekle</button>
+                    </div>
                     <div class="table-container">
                         <table>
                             <thead>
@@ -159,6 +188,63 @@
                             </thead>
                             <tbody id="cardsTableBody"></tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kart Ekle Modal -->
+            <div class="modal-overlay" id="addCardModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-plus" style="color: var(--primary);"></i> Yeni Kart Oluştur</h3>
+                        <button class="modal-close" onclick="closeAddCardModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="cardFormBody">
+                        <p class="form-section-title"><i class="fa-solid fa-user"></i> Kişisel Bilgiler</p>
+                        <div class="form-row">
+                            <div><label>Ad *</label><input type="text" id="newAd" placeholder="Ahmet"></div>
+                            <div><label>Soyad *</label><input type="text" id="newSoyad" placeholder="Yılmaz"></div>
+                        </div>
+                        <div class="form-row">
+                            <div><label>Ünvan</label><input type="text" id="newUnvan" placeholder="Yazılım Mühendisi"></div>
+                            <div><label>Şirket</label><input type="text" id="newSirket" placeholder="ABC Teknoloji"></div>
+                        </div>
+
+                        <p class="form-section-title"><i class="fa-solid fa-address-book"></i> İletişim</p>
+                        <div class="form-row">
+                            <div><label>Telefon</label><input type="text" id="newTel" placeholder="+90 555 123 4567"></div>
+                            <div><label>E-posta</label><input type="email" id="newEmail" placeholder="ahmet@example.com"></div>
+                        </div>
+                        <div class="form-row">
+                            <div><label>Web Sitesi</label><input type="text" id="newWeb" placeholder="https://example.com"></div>
+                            <div><label>Şehir</label><input type="text" id="newSehir" placeholder="İstanbul"></div>
+                        </div>
+
+                        <p class="form-section-title"><i class="fa-brands fa-instagram"></i> Sosyal Medya</p>
+                        <div class="form-row">
+                            <div><label>LinkedIn</label><input type="text" id="newLinkedin" placeholder="linkedin.com/in/kullanici"></div>
+                            <div><label>Instagram</label><input type="text" id="newInstagram" placeholder="@kullanici"></div>
+                        </div>
+                        <div class="form-row">
+                            <div><label>Twitter</label><input type="text" id="newTwitter" placeholder="@kullanici"></div>
+                            <div><label>WhatsApp</label><input type="text" id="newWhatsapp" placeholder="+90 555 123 4567"></div>
+                        </div>
+
+                        <p class="form-section-title"><i class="fa-solid fa-palette"></i> Ek Bilgiler</p>
+                        <div class="form-full"><label>Hakkımda</label><textarea id="newBio" placeholder="Kendinizi kısaca tanıtın..."></textarea></div>
+                        <div class="form-row">
+                            <div><label>Kart Rengi</label><input type="color" id="newRenk" value="#4F46E5" style="height: 38px;"></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="qr-result" id="qrResult">
+                        <h3 style="margin-bottom: 1rem; color: var(--success);"><i class="fa-solid fa-check-circle"></i> Kart Oluşturuldu!</h3>
+                        <img id="qrResultImg" src="" alt="QR Kod">
+                        <p class="card-url"><a id="qrResultUrl" href="" target="_blank"></a></p>
+                    </div>
+                    <div class="modal-footer" id="cardFormFooter">
+                        <button class="btn-cancel" onclick="closeAddCardModal()">İptal</button>
+                        <button class="btn-primary" id="submitCardBtn" onclick="submitNewCard()"><i class="fa-solid fa-check"></i> Oluştur</button>
                     </div>
                 </div>
             </div>
@@ -366,6 +452,63 @@
                     </tr>
                 `;
             });
+        }
+        // --- Kart Ekle Modal ---
+        function openAddCardModal() {
+            document.getElementById('addCardModal').classList.add('active');
+            document.getElementById('cardFormBody').style.display = 'block';
+            document.getElementById('cardFormFooter').style.display = 'flex';
+            document.getElementById('qrResult').style.display = 'none';
+            // Clear form
+            ['newAd','newSoyad','newUnvan','newSirket','newTel','newEmail','newWeb','newSehir','newLinkedin','newInstagram','newTwitter','newWhatsapp','newBio'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('newRenk').value = '#4F46E5';
+        }
+
+        function closeAddCardModal() {
+            document.getElementById('addCardModal').classList.remove('active');
+        }
+
+        async function submitNewCard() {
+            const ad = document.getElementById('newAd').value.trim();
+            const soyad = document.getElementById('newSoyad').value.trim();
+            if (!ad || !soyad) return alert('Ad ve Soyad zorunludur!');
+
+            document.getElementById('submitCardBtn').disabled = true;
+            document.getElementById('submitCardBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Oluşturuluyor...';
+
+            const body = {
+                ad, soyad,
+                unvan: document.getElementById('newUnvan').value.trim(),
+                sirket: document.getElementById('newSirket').value.trim(),
+                tel: document.getElementById('newTel').value.trim(),
+                email: document.getElementById('newEmail').value.trim(),
+                web: document.getElementById('newWeb').value.trim(),
+                sehir: document.getElementById('newSehir').value.trim(),
+                linkedin: document.getElementById('newLinkedin').value.trim(),
+                instagram: document.getElementById('newInstagram').value.trim(),
+                twitter: document.getElementById('newTwitter').value.trim(),
+                whatsapp: document.getElementById('newWhatsapp').value.trim(),
+                bio: document.getElementById('newBio').value.trim(),
+                renk: document.getElementById('newRenk').value
+            };
+
+            const result = await fetchAPI('/api/admin/kart', { method: 'POST', body: JSON.stringify(body) });
+
+            document.getElementById('submitCardBtn').disabled = false;
+            document.getElementById('submitCardBtn').innerHTML = '<i class="fa-solid fa-check"></i> Oluştur';
+
+            if (result && result.kart) {
+                document.getElementById('cardFormBody').style.display = 'none';
+                document.getElementById('cardFormFooter').style.display = 'none';
+                document.getElementById('qrResult').style.display = 'block';
+                document.getElementById('qrResultImg').src = result.qrCode;
+                document.getElementById('qrResultUrl').href = result.url;
+                document.getElementById('qrResultUrl').textContent = result.url;
+                loadCardsData();
+                loadDashboardData();
+            } else {
+                alert('Kart oluşturulurken bir hata oluştu.');
+            }
         }
     </script>
 </body>
