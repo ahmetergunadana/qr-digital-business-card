@@ -234,6 +234,33 @@ ADR;TYPE=WORK:;;;${kart.sehir || ''};;;
 });
 
 // --- ADMIN API ---
+app.post('/api/admin/kart', adminAuth, async (req, res) => {
+    try {
+        const { ad, soyad, unvan, sirket, tel, email, web, sehir, linkedin, instagram, twitter, whatsapp, bio, renk, ozelAlanlar } = req.body;
+        if (!ad || !soyad) return res.status(400).json({ error: 'Ad ve soyad zorunludur' });
+
+        const id = uuidv4();
+        const kart = {
+            id, userId: 'admin', ad, soyad, unvan, sirket, tel, email, web, sehir,
+            linkedin, instagram, twitter, whatsapp, bio, renk: renk || '#4F46E5',
+            ozelAlanlar: ozelAlanlar || [],
+            olusturulma: new Date().toISOString(),
+            aktif: true
+        };
+
+        writeLineJSON(kartlarFile, kart);
+
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+        const cardUrl = `${protocol}://${req.headers.host || 'localhost:3000'}/kart.html?id=${id}`;
+        const qrCodeDataUrl = await qrcode.toDataURL(cardUrl, { width: 400, margin: 2, color: { dark: '#000000', light: '#ffffff' } });
+
+        res.status(201).json({ kart, qrCode: qrCodeDataUrl, url: cardUrl });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Sunucu hatası' });
+    }
+});
+
 app.get('/api/admin/kartlar', adminAuth, (req, res) => {
     const kartlar = readLinesJSON(kartlarFile);
     const kullanicilar = readLinesJSON(kullanicilarFile);
